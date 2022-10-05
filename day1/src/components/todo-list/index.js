@@ -6,7 +6,8 @@ const url = "https://jsonplaceholder.typicode.com/todos";
 
 const TodoList = () => {
 	const [todos, setTodos] = useState([]);
-  const [selectedTodo, setSelectedTodo] = useState();
+	const [selectedTodo, setSelectedTodo] = useState();
+	const [activePage, setActivePage] = useState(1);
 
 	useEffect(() => {
 		fetch(url)
@@ -23,70 +24,123 @@ const TodoList = () => {
 		return (
 			<thead>
 				<tr>
-					<th>id</th>
+					<th
+						onClick={() => {
+							if (selectedTodo !== "id") {
+								setTodos([...todos].reverse());
+							} else {
+								setTodos([...todos].sort((a, b) => a.id - b.id));
+							}
+						}}
+					>
+						id
+					</th>
 					<th>başlık</th>
-					<th>durum</th>
-					<th>Aksiyon</th>
+					<th
+						onClick={() => {
+							if (!todos[0].completed) {
+								setTodos([...todos].sort((a, b) => b.completed - a.completed));
+							} else {
+								setTodos([...todos].sort((a, b) => a.completed - b.completed));
+							}
+						}}
+					>
+						durum
+					</th>
+					<th>
+						Aksiyon
+					</th>
 				</tr>
 			</thead>
 		);
 	};
 
 
-  const remove = (todo) => {
-    if (window.confirm("Silmek üzerisiniz emin misiniz")) {
-      setTodos(prev => {
-        return prev.filter(x => x.id != todo.id)
-      })
-    }
-  }
+	const remove = (todo) => {
+		if (window.confirm("Silmek üzerisiniz emin misiniz")) {
+			setTodos(prev => {
+				return prev.filter(x => x.id !== todo.id);
+			});
+		}
+	};
 
-  const edit = (todo) => {
-    setSelectedTodo(todo);
-  }
+	const edit = (todo) => {
+		setSelectedTodo(todo);
+	};
+
+	const pagination = () => {
+		const pages = [];
+		for (let i = 1; i <= todos.length / 15 + 1; i++) {
+			pages.push(i);
+		}
+
+		return (
+			<nav className="d-flex justify-content-center" aria-label="Page navigation example">
+				<ul className="pagination">
+					{
+						pages.map(page => {
+							return (
+								<li
+									className={`page-item ${activePage === page ? "active" : ""}`}
+									key={page}
+									onClick={() => setActivePage(page)}
+								>
+									<a className="page-link" href="#!">{page}</a>
+								</li>
+							);
+						})
+					}
+				</ul>
+			</nav>
+		);
+	};
 
 	const renderBody = () => {
 		return (
 			<tbody>
-				{todos.slice(0, 15).map((todo, index) => {
-					return (
-						<tr key={index}>
-							<td>{todo.id}</td>
-							<td>{todo.title}</td>
-							<td>{todo.completed ? "Tamamlandı" : "Yapılacak"}</td>
-							<td>
-								<Button
-                  className={`btn btn-sm btn-danger ${classes.actionButton} `}
-                  onClick={() => remove(todo)}
-								>
-									Sil
-								</Button>
-								<Button onClick={() => edit(todo)} className="btn btn-sm btn-warning">Düzenle</Button>
-							</td>
-						</tr>
-					);
-				})}
+				{
+					todos && todos.length > 0 && todos.slice((activePage - 1) * 15, activePage * 15).map((todo, index) => {
+						return (
+							<tr key={index}>
+								<td>{todo.id}</td>
+								<td>{todo.title}</td>
+								<td>{todo.completed ? "Tamamlandı" : "Yapılacak"}</td>
+								<td>
+									<Button
+										className={`btn btn-sm btn-danger ${classes.actionButton} `}
+										onClick={() => remove(todo)}
+									>
+										Sil
+									</Button>
+									<Button onClick={() => edit(todo)} className="btn btn-sm btn-warning">Düzenle</Button>
+								</td>
+							</tr>
+						);
+					})
+				}
 			</tbody>
 		);
 	};
 
 
-  const renderEditForm = () => {
-    return (
-      <div>
-        <input type={"text"}/>
-        <inpu type="check" />
-        <Button>Kaydet</Button>
-        <Button onClick={() => setSelectedTodo(undefined)}>Vazgeç</Button>
-      </div>
-    )
-  }
+	const renderEditForm = () => {
+		return (
+			<div>
+				<input type={"text"} />
+				<inpu type="check" />
+				<Button>Kaydet</Button>
+				<Button onClick={() => setSelectedTodo(undefined)}>Vazgeç</Button>
+			</div>
+		);
+	};
+
 	return (
-    <div className={`${classes.container} container`}>
-      { selectedTodo && renderEditForm()}
+		<div className={`${classes.container} container`}>
+			{pagination()}
+			{selectedTodo && renderEditForm()}
 			<table className="table">
 				{renderThead()}
-        {renderBody()}
+				{renderBody()}
 			</table>
 		</div>
 	);
