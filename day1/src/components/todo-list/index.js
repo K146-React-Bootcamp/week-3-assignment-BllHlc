@@ -55,6 +55,13 @@ const TodoList = () => {
 		);
 	};
 
+	const editTodo = (id, value) => {
+
+		const newTodos = [...todos];
+		const todo = newTodos.find((todo) => todo.id === id);
+		todo.title = value;
+		setTodos(newTodos);
+	};
 
 	const remove = (todo) => {
 		if (window.confirm("Silmek üzerisiniz emin misiniz")) {
@@ -122,13 +129,16 @@ const TodoList = () => {
 		);
 	};
 
-
 	const renderEditForm = () => {
 		return (
 			<div>
-				<input type={"text"} />
-				<inpu type="check" />
-				<Button>Kaydet</Button>
+				<input type="text"
+					onChange={(e) => editTodo(selectedTodo.id, e.target.value)}
+				/>
+				{/* <input type="checkbox" /> */}
+				<Button
+					onClick={() => setSelectedTodo(undefined)}
+				>Kaydet</Button>
 				<Button onClick={() => setSelectedTodo(undefined)}>Vazgeç</Button>
 			</div>
 		);
