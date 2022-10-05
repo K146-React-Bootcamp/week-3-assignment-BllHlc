@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1,
+    h2 {
+      margin: 5px;
+    }
+
+    button {
+      margin: 10px;
+      width: 30px;
+      height: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Counter</h2>
+  <h1 id="counter">0</h1>
+  <div>
+    <button onclick="counterChange('increase')">+</button>
+    <button onclick="counterChange('decrease')">-</button>
+  </div>
+
+</body>
+<script>
+
+  // 1. Create a custom event
+  const counterEvent = new CustomEvent('counterChange', {
+    detail: {
+      counter: 0
+    }
+  });
+
+  // 2. Create a function to dispatch the event
+  function counterChange(type) {
+    if (type === 'increase') {
+      counterEvent.detail.counter++;
+    } else if (type === 'decrease') {
+      counterEvent.detail.counter--;
+    }
+    document.dispatchEvent(counterEvent);
+  }
+
+  // 3. Create a function to listen for the event
+  document.addEventListener('counterChange', (e) => {
+    document.getElementById('counter').innerHTML = e.detail.counter;
+  });
+
+  /*
+    First we must create a custom event. We can do this by using the CustomEvent constructor.
+    The constructor takes two arguments, the name of the event and an object with the detail property.
+    The detail property is an object that can hold any data we want to pass to the event listener.
+    In this case we want to pass the counter value.
+    Next we create a function to dispatch the event. This function will be called when the user clicks on the buttons.
+    The function takes one argument, the type of change. If the type is increase we increment the counter value by one.
+    If the type is decrease we decrement the counter value by one.
+    Next we add an event listener to the document. The event listener will listen for the counterChange event.
+    When the event is dispatched the event listener will update the counter value in the DOM.
+
+    Now we can test our code. Open the index.html file in your browser and click on the buttons.
+    You should see the counter value increase and decrease.
+   */
+
+</script>
+
+</html>
